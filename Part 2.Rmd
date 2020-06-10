@@ -1,0 +1,70 @@
+---
+title: "HW3 Part 2"
+author: "Tanya Malaiya"
+date: "4/19/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Loading libraries
+require(arules)
+require(arulesViz)
+
+#Loading data
+TransFood <- read.csv('https://xiaoruizhu.github.io/Data-Mining-R/data/food_4_association.csv')
+write.csv(TransFood,"Snapshot.csv", row.names = F)
+TransFood <- TransFood[, -1]
+
+# Find out elements that are not equal to 0 or 1 and change them to 1.
+Others <- which(!(as.matrix(TransFood) ==1 | as.matrix(TransFood) ==0), arr.ind=T )
+TransFood[Others] <- 1
+TransFood <- as(as.matrix(TransFood), "transactions")
+
+summary(TransFood)
+
+itemFrequencyPlot(TransFood, support = 0.1, cex.names=0.8)
+
+x = TransFood[size(TransFood) > 14]
+inspect(x)
+
+basket_rules <- apriori(TransFood,parameter = list(sup = 0.001, conf = 0.5, target="rules"))
+summary(basket_rules)
+
+inspect(basket_rules)
+
+inspect(subset(basket_rules, size(basket_rules)>3))
+
+fries.rhs <- subset(basket_rules, subset = rhs %in% "French.Fries.BasketFood")
+inspect(fries.rhs)
+```
+
+
+```{r}
+plot(basket_rules)
+
+plot(head(sort(basket_rules, by="lift"), 10), method = "graph")
+
+plot(basket_rules, method="grouped")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
